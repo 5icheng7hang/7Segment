@@ -14,3 +14,7 @@ all the useful functions are putted into method.c/method.h, feel free to expand 
 ----
 
 project it self contains a simple example for getting input and draw some basic shapes.
+
+---
+
+## Maybe useful for programming beginers to just making game while motifying this whole framework.
