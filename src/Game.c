@@ -2,7 +2,7 @@
 
 #include "Game.h"
 #include "Config.h"
-#include "Methods.h"
+#include "GameplayCore.h"
 
 void InitGame(struct Game *game)
 {
@@ -25,9 +25,7 @@ void InitGame(struct Game *game)
 
     game->ShouldQuitGame = false;
 
-    // DrawLine(game, 0, 0, 63, 47);
-    // DrawRect(game, 22,14, 32,24);
-    DrawCirc(game, 32, 24, 10);
+    Birth(game);
 }
 
 void RunGame(struct Game *game)
@@ -72,14 +70,22 @@ void UpdateGame(struct Game *game)
         case SDL_KEYDOWN:
         {
             char key = event.key.keysym.sym;
-            printf("%s is pressed down \n", &key);
+            if (key >= 'a' && key <= 'z')
+            {
+                game->KeyStateArray[key - 'a'] = true;
+            }
         }
         break;
 
         case SDL_KEYUP:
         {
             char key = event.key.keysym.sym;
-            printf("%s is up \n", &key);
+
+            game->KeyStateArray[key - 'a'] = false;
+            if (key >= 'a' && key <= 'z')
+            {
+                game->KeyStateArray[key - 'a'] = false;
+            }
         }
         break;
 
@@ -87,14 +93,15 @@ void UpdateGame(struct Game *game)
             break;
         }
     }
+    Pulse(game);
 }
 
 void DrawBackground(struct Game *game)
 {
 
-    SDL_SetRenderDrawColor(game->GameRenderer, GRID_GAP_COLOR);
+    SDL_SetRenderDrawColor(game->GameRenderer, COLOR2);
     SDL_RenderClear(game->GameRenderer);
-    SDL_SetRenderDrawColor(game->GameRenderer, GRID_OFF_COLOR);
+    SDL_SetRenderDrawColor(game->GameRenderer, COLOR1);
 
     for (int x = 0; x < RES_WIDTH; x++)
     {
@@ -114,7 +121,7 @@ void DrawBackground(struct Game *game)
 void DrawForeground(struct Game *game)
 {
 
-    SDL_SetRenderDrawColor(game->GameRenderer, GRID_ON_COLOR);
+    SDL_SetRenderDrawColor(game->GameRenderer, COLOR3);
 
     for (int x = 0; x < RES_WIDTH; x++)
     {
@@ -131,7 +138,6 @@ void DrawForeground(struct Game *game)
             }
         }
     }
-
     SDL_RenderPresent(game->GameRenderer);
 }
 

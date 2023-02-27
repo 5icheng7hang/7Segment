@@ -12,7 +12,7 @@ void EndGame(struct Game *game);
 
 // Draw functions.
 
-void SetPixel(struct Game *game, int x, int y);
+void SetPixel(struct Game *game, int x, int y, bool b);
 bool GetPixel(struct Game *game, int x, int y);
 
 void DrawRect(struct Game *game, int x0, int y0, int x1, int y1);

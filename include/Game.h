@@ -12,8 +12,11 @@ struct Game
     SDL_Renderer* GameRenderer;
     bool ShouldQuitGame;
     int millisecsPreviousFrame;
+    bool KeyStateArray[26];
     bool ForegroundArray[RES_WIDTH][RES_HEITHT];
 };
+
+
 void InitGame(struct Game* game);
 void RunGame(struct Game* game);
 void UpdateGame(struct Game* game);

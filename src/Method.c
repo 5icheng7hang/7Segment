@@ -1,14 +1,27 @@
 #include "Methods.h"
 
 #include "Game.h"
+#include "Config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-void SetPixel(struct Game *game, int x, int y)
+void EndGame(struct Game *game)
 {
-    game->ForegroundArray[x][y] = true;
+    game->ShouldQuitGame = true;
+}
+
+bool IsKeyPressed(struct Game *game, char key)
+{
+    return game->KeyStateArray[key - 'a'];
+}
+
+void SetPixel(struct Game *game, int x, int y, bool b)
+{
+    x = x % RES_WIDTH;
+    y = y % RES_HEITHT;
+    game->ForegroundArray[x][y] = b;
 }
 
 bool GetPixel(struct Game *game, int x, int y)
@@ -29,12 +42,12 @@ void DrawRectFill(struct Game *game, int x0, int y0, int x1, int y1)
     if (x0 > x1)
     {
         int temp;
-        
+
         temp = x0;
         x0 = x1;
         x1 = temp;
     }
-    
+
     if (y0 > y1)
     {
         int temp;
@@ -50,7 +63,7 @@ void DrawRectFill(struct Game *game, int x0, int y0, int x1, int y1)
         {
             if (x >= x0 && x <= x1 && y >= y0 && y <= y1)
             {
-                SetPixel(game, x, y);
+                SetPixel(game, x, y, true);
             }
         }
     }
@@ -60,102 +73,95 @@ void DrawCirc(struct Game *game, int x_centre, int y_centre, int r)
 {
     int x = r, y = 0;
 
-    SetPixel(game, x + x_centre, y + y_centre);
-    printf("(%d, %d) ", x + x_centre, y + y_centre);
-    
+    SetPixel(game, x + x_centre, y + y_centre, true);
+
     if (r > 0)
     {
-        SetPixel(game, -x + x_centre, y + y_centre);
-        SetPixel(game, y + x_centre, x + y_centre);
-        SetPixel(game, y + x_centre, -x + y_centre);
-        printf("(%d, %d) ", x + x_centre, -y + y_centre);
-        printf("(%d, %d) ", y + x_centre, x + y_centre);
-        printf("(%d, %d)\n", -y + x_centre, x + y_centre);
+        SetPixel(game, -x + x_centre, y + y_centre, true);
+
+        SetPixel(game, y + x_centre, x + y_centre, true);
+        SetPixel(game, y + x_centre, -x + y_centre, true);
     }
-     
+
     int P = 1 - r;
     while (x > y)
     {
         y++;
 
         if (P <= 0)
-            P = P + 2*y + 1;
-             
+            P = P + 2 * y + 1;
+
         else
         {
             x--;
-            P = P + 2*y - 2*x + 1;
+            P = P + 2 * y - 2 * x + 1;
         }
-         
+
         if (x < y)
             break;
-        
-        SetPixel(game, x + x_centre, y + y_centre);
-        SetPixel(game, -x + x_centre, y + y_centre);
-        SetPixel(game, x + x_centre, -y + y_centre);
-        SetPixel(game, -x + x_centre, -y + y_centre);
-         
+
+        SetPixel(game, x + x_centre, y + y_centre, true);
+        SetPixel(game, -x + x_centre, y + y_centre, true);
+        SetPixel(game, x + x_centre, -y + y_centre, true);
+        SetPixel(game, -x + x_centre, -y + y_centre, true);
+
         if (x != y)
         {
-            SetPixel(game, y + x_centre, x + y_centre);
-            SetPixel(game, -y + x_centre, x + y_centre);
-            SetPixel(game, y + x_centre, -x + y_centre);
-            SetPixel(game, -y + x_centre, -x + y_centre);
+            SetPixel(game, y + x_centre, x + y_centre, true);
+            SetPixel(game, -y + x_centre, x + y_centre, true);
+            SetPixel(game, y + x_centre, -x + y_centre, true);
+            SetPixel(game, -y + x_centre, -x + y_centre, true);
         }
     }
 }
-
 
 void DrawCircFill(struct Game *game, int x_centre, int y_centre, int r)
 {
     int x = r, y = 0;
 
-    SetPixel(game, x + x_centre, y + y_centre);
-    printf("(%d, %d) ", x + x_centre, y + y_centre);
-    
+    SetPixel(game, x + x_centre, y + y_centre, true);
+
     if (r > 0)
     {
-        SetPixel(game, -x + x_centre, y + y_centre);
-        SetPixel(game, y + x_centre, x + y_centre);
-        SetPixel(game, y + x_centre, -x + y_centre);
-        printf("(%d, %d) ", x + x_centre, -y + y_centre);
-        printf("(%d, %d) ", y + x_centre, x + y_centre);
-        printf("(%d, %d)\n", -y + x_centre, x + y_centre);
+        SetPixel(game, -x + x_centre, y + y_centre, true);
+        DrawLine(game, x + x_centre, y + y_centre, -x + x_centre, y + y_centre);
+        SetPixel(game, y + x_centre, x + y_centre, true);
+        SetPixel(game, y + x_centre, -x + y_centre, true);
     }
-     
+
     int P = 1 - r;
     while (x > y)
     {
         y++;
 
         if (P <= 0)
-            P = P + 2*y + 1;
-             
+            P = P + 2 * y + 1;
+
         else
         {
             x--;
-            P = P + 2*y - 2*x + 1;
+            P = P + 2 * y - 2 * x + 1;
         }
-         
+
         if (x < y)
             break;
-        
-        SetPixel(game, x + x_centre, y + y_centre);
-        SetPixel(game, -x + x_centre, y + y_centre);
+
+        SetPixel(game, x + x_centre, y + y_centre, true);
+        SetPixel(game, -x + x_centre, y + y_centre, true);
         DrawLine(game, x + x_centre, y + y_centre, -x + x_centre, y + y_centre);
 
-        SetPixel(game, x + x_centre, -y + y_centre);
-        SetPixel(game, -x + x_centre, -y + y_centre);
+        SetPixel(game, x + x_centre, -y + y_centre, true);
+        SetPixel(game, -x + x_centre, -y + y_centre, true);
         DrawLine(game, x + x_centre, -y + y_centre, -x + x_centre, -y + y_centre);
-         
+
         if (x != y)
         {
-            SetPixel(game, y + x_centre, x + y_centre);
-            SetPixel(game, -y + x_centre, x + y_centre);
+            SetPixel(game, y + x_centre, x + y_centre, true);
+            SetPixel(game, -y + x_centre, x + y_centre, true);
             DrawLine(game, y + x_centre, x + y_centre, -y + x_centre, x + y_centre);
 
-            SetPixel(game, y + x_centre, -x + y_centre);
-            SetPixel(game, -y + x_centre, -x + y_centre);
+            SetPixel(game, y + x_centre, -x + y_centre, true);
+            SetPixel(game, -y + x_centre, -x + y_centre, true);
             DrawLine(game, y + x_centre, -x + y_centre, -y + x_centre, -x + y_centre);
         }
     }
@@ -172,7 +178,7 @@ void DrawLine(struct Game *game, int x0, int y0, int x1, int y1)
         temp = x0;
         x0 = y0;
         y0 = temp;
-        
+
         temp = x1;
         x1 = y1;
         y1 = temp;
@@ -181,19 +187,19 @@ void DrawLine(struct Game *game, int x0, int y0, int x1, int y1)
     if (x0 > x1)
     {
         int temp;
-        
+
         temp = x0;
         x0 = x1;
         x1 = temp;
-        
+
         temp = y0;
         y0 = y1;
         y1 = temp;
     }
-    
-    int dx = x1-x0;
-    int dy = abs(y1-y0);
-    int error = dx/2;
+
+    int dx = x1 - x0;
+    int dy = abs(y1 - y0);
+    int error = dx / 2;
     int ystep;
     int y = y0;
 
@@ -205,23 +211,22 @@ void DrawLine(struct Game *game, int x0, int y0, int x1, int y1)
     {
         ystep = -1;
     }
-    
+
     for (int x = x0; x <= x1; x++)
     {
         if (steep)
         {
-            SetPixel(game,y,x);
+            SetPixel(game, y, x, true);
         }
         else
         {
-            SetPixel(game,x,y);
+            SetPixel(game, x, y, true);
         }
-        error = error -dy;
+        error = error - dy;
         if (error < 0)
         {
             y = y + ystep;
-            error = error +dx;
-        }   
+            error = error + dx;
+        }
     }
 }
-

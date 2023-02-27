@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "update.h": "c"
+        "update.h": "c",
+        "gameplaycore.h": "c"
     }
 }
